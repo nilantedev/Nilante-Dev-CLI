@@ -29,14 +29,15 @@ python install.py
 
 **Simple Launch (Recommended)**:
 ```bash
-# MCP server for Claude Desktop
-python start.py
+# Using shell script (automatically handles virtual environment)
+./start.sh               # MCP server for Claude Desktop
+./start.sh --http        # HTTP server with dashboard
+./start.sh --help        # Show help
 
-# HTTP server with web dashboard  
-python start.py --http
-
-# Show help
-python start.py --help
+# Using Python script (requires manual virtual environment)
+source .venv/bin/activate
+python start.py          # MCP server for Claude Desktop  
+python start.py --http   # HTTP server with dashboard
 ```
 
 **Direct Launch**:
@@ -56,8 +57,8 @@ Add to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "memory": {
-      "command": "python",
-      "args": ["start.py"],
+      "command": "./start.sh",
+      "args": [],
       "cwd": "/path/to/mcp-memory-service"
     }
   }
