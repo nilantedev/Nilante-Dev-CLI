@@ -34,7 +34,7 @@ from mcp.types import TextContent
 
 # Import existing memory service components
 from .config import (
-    CHROMA_PATH, COLLECTION_METADATA, STORAGE_BACKEND, 
+    CHROMA_PATH, COLLECTION_METADATA, STORAGE_BACKEND, SQLITE_VEC_PATH, 
     CONSOLIDATION_ENABLED, EMBEDDING_MODEL_NAME
 )
 from .storage.base import MemoryStorage
@@ -45,8 +45,8 @@ def get_storage_backend():
     
     if backend == "sqlite-vec" or backend == "sqlite_vec":
         try:
-            from .storage.sqlite_vec import SqliteVecStorage
-            return SqliteVecStorage
+            from .storage.sqlite_vec import SqliteVecMemoryStorage
+            return SqliteVecMemoryStorage
         except ImportError as e:
             logger.error(f"Failed to import SQLite-vec storage: {e}")
             raise
@@ -57,16 +57,16 @@ def get_storage_backend():
         except ImportError:
             logger.warning("ChromaDB not available, falling back to SQLite-vec")
             try:
-                from .storage.sqlite_vec import SqliteVecStorage
-                return SqliteVecStorage
+                from .storage.sqlite_vec import SqliteVecMemoryStorage
+                return SqliteVecMemoryStorage
             except ImportError as e:
                 logger.error(f"Failed to import fallback SQLite-vec storage: {e}")
                 raise
     else:
         logger.warning(f"Unknown storage backend '{backend}', defaulting to SQLite-vec")
         try:
-            from .storage.sqlite_vec import SqliteVecStorage
-            return SqliteVecStorage
+            from .storage.sqlite_vec import SqliteVecMemoryStorage
+            return SqliteVecMemoryStorage
         except ImportError as e:
             logger.error(f"Failed to import default SQLite-vec storage: {e}")
             raise
@@ -89,10 +89,10 @@ async def mcp_server_lifespan(server: FastMCP) -> AsyncIterator[MCPServerContext
     # Initialize storage backend based on configuration and availability
     StorageClass = get_storage_backend()
     
-    if StorageClass.__name__ == "SqliteVecStorage":
+    if StorageClass.__name__ == "SqliteVecMemoryStorage":
         storage = StorageClass(
-            db_path=CHROMA_PATH / "memory.db",
-            embedding_manager=None  # Will be set after creation
+            db_path=SQLITE_VEC_PATH,
+            embedding_model="all-MiniLM-L6-v2"
         )
     else:  # ChromaStorage
         storage = StorageClass(

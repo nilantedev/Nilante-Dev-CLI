@@ -4,19 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-MCP Memory Service is a Model Context Protocol server that provides semantic memory and persistent storage capabilities for Claude Desktop using ChromaDB and sentence transformers. The project enables long-term memory storage with semantic search across conversations.
+MCP Memory Service is a clean, production-ready Model Context Protocol server providing semantic memory and persistent storage for Claude Desktop. Features multiple storage backends (SQLite-vec recommended, ChromaDB supported), HTTP API, and autonomous memory consolidation.
 
 ## Key Commands
 
 ### Development
 - **Install dependencies**: `python install.py` (platform-aware installation)
-- **Run server**: `python scripts/run_memory_server.py` or `uv run memory`
-- **Run tests**: `pytest tests/`
-- **Run specific test**: `pytest tests/unit/test_memory_models.py::TestMemoryModel::test_memory_creation`
+- **Run MCP server**: `python scripts/run_memory_server.py`
+- **Run HTTP server**: `python scripts/run_http_server.py`
+- **Health check**: `python scripts/database/db_health_check.py`
 - **Check environment**: `python scripts/verify_environment.py`
-- **Debug with MCP Inspector**: `npx @modelcontextprotocol/inspector uv --directory /path/to/repo run memory`
-- **Check documentation links**: `python scripts/check_documentation_links.py` (validates all internal markdown links)
-- **Test Docker functionality**: `python scripts/test_docker_functionality.py` (comprehensive Docker container verification)
+- **Quick start**: See `QUICKSTART.md` for 5-minute setup
 
 ### Build & Package
 - **Build package**: `python -m build`
@@ -33,8 +31,9 @@ MCP Memory Service is a Model Context Protocol server that provides semantic mem
 
 2. **Storage Abstraction** (`src/mcp_memory_service/storage/`)
    - `base.py`: Abstract interface for storage backends
+   - `sqlite_vec.py`: SQLite-vec implementation (recommended)
    - `chroma.py`: ChromaDB implementation
-   - `chroma_enhanced.py`: Extended features (time parsing, advanced search)
+   - `chroma_enhanced.py`: Extended ChromaDB features
 
 3. **Models** (`src/mcp_memory_service/models/memory.py`)
    - `Memory`: Core dataclass for memory entries
@@ -69,21 +68,22 @@ Memory operations implemented:
 
 ### Testing
 
-Tests are organized by type:
-- `tests/unit/`: Unit tests for individual components
-- `tests/integration/`: Integration tests for full workflows
-- `tests/performance/`: Performance benchmarks
+The codebase has been cleaned up - test files that were incomplete have been removed. Core functionality is verified through:
+- Health checks: `python scripts/database/db_health_check.py`
+- Integration testing: Test the full MCP protocol workflow
+- Manual testing: Use the provided test scripts
 
-Run tests with coverage: `pytest --cov=src/mcp_memory_service tests/`
+Run health check: `python scripts/database/db_health_check.py`
 
 ### Environment Variables
 
 Key configuration:
-- `MCP_MEMORY_CHROMA_PATH`: ChromaDB storage location (default: `~/.mcp_memory_chroma`)
-- `MCP_MEMORY_BACKUPS_PATH`: Backup location (default: `~/.mcp_memory_backups`)
+- `MCP_MEMORY_STORAGE_BACKEND`: `sqlite_vec` (recommended) or `chroma`
+- `MCP_MEMORY_SQLITE_PATH`: SQLite database location (default: `~/.local/share/mcp-memory/sqlite_vec.db`)
+- `MCP_MEMORY_CHROMA_PATH`: ChromaDB storage location (default: `~/.local/share/mcp-memory/chroma_db`)
+- `MCP_MEMORY_BACKUPS_PATH`: Backup location (default: `~/.local/share/mcp-memory/backups`)
 - `MCP_API_KEY`: API key for HTTP authentication (optional, no default)
 - `LOG_LEVEL`: Logging verbosity (DEBUG, INFO, WARNING, ERROR)
-- Platform-specific: `PYTORCH_ENABLE_MPS_FALLBACK`, `MCP_MEMORY_USE_ONNX`
 
 #### API Key Configuration
 
