@@ -27,8 +27,21 @@ python install.py
 
 ### Start the Service
 
+**Simple Launch (Recommended)**:
 ```bash
-# Local MCP server (recommended for Claude Desktop)
+# MCP server for Claude Desktop
+python start.py
+
+# HTTP server with web dashboard  
+python start.py --http
+
+# Show help
+python start.py --help
+```
+
+**Direct Launch**:
+```bash
+# Local MCP server (for Claude Desktop)
 python scripts/run_memory_server.py
 
 # HTTP server (for remote access)
@@ -44,7 +57,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "memory": {
       "command": "python",
-      "args": ["scripts/run_memory_server.py"],
+      "args": ["start.py"],
       "cwd": "/path/to/mcp-memory-service"
     }
   }

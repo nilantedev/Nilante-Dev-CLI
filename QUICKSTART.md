@@ -17,10 +17,10 @@ python install.py && echo "✅ Installation complete!"
 python scripts/database/db_health_check.py
 
 # Start the service 
-python scripts/run_memory_server.py &
+python start.py &
 
-# Test basic functionality
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | nc localhost 8765
+# Start HTTP server with dashboard
+python start.py --http
 ```
 
 ## 🎯 Claude Desktop Integration (30 seconds)
@@ -32,7 +32,7 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | nc localhost 8765
      "mcpServers": {
        "memory": {
          "command": "python",
-         "args": ["scripts/run_memory_server.py"], 
+         "args": ["start.py"], 
          "cwd": "/path/to/mcp-memory-service"
        }
      }
